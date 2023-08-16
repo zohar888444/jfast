@@ -26,6 +26,7 @@ import com.jfast.background.param.BackgroundAccountEditParam;
 import com.jfast.background.param.BackgroundAccountQueryCondParam;
 import com.jfast.background.repo.BackgroundAccountRepo;
 import com.jfast.background.vo.BackgroundAccountVO;
+import com.jfast.background.vo.SuperAdminVO;
 import com.jfast.common.exception.BizException;
 import com.jfast.common.vo.PageResult;
 
@@ -38,6 +39,36 @@ public class RbacService {
 
 	@Autowired
 	private BackgroundAccountRepo backgroundAccountRepo;
+
+	@Transactional
+	public void modifySuperAdminLoginPwd(@NotBlank String accountId, @NotBlank String newPwd,
+			@NotBlank String operatorId) {
+		BackgroundAccount superAdmin = backgroundAccountRepo.getOne(operatorId);
+		if (!superAdmin.getSuperAdminFlag()) {
+			throw new BizException("无权修改超级管理员的密码");
+		}
+		if (!accountId.equals(operatorId)) {
+			throw new BizException("无权修改");
+		}
+		BackgroundAccount account = backgroundAccountRepo.getOne(accountId);
+		account.setLoginPwd(SaSecureUtil.sha256(newPwd));
+		backgroundAccountRepo.save(account);
+	}
+
+	@Transactional(readOnly = true)
+	public List<SuperAdminVO> findSuperAdmin() {
+		return SuperAdminVO.convertFor(backgroundAccountRepo.findBySuperAdminFlagTrueAndDeletedFlagIsFalse());
+	}
+
+	@Transactional
+	public void modifyLoginPwd(@NotBlank String id, @NotBlank String newPwd) {
+		BackgroundAccount account = backgroundAccountRepo.getOne(id);
+		if (account.getSuperAdminFlag()) {
+			throw new BizException("无权操作超级管理员");
+		}
+		account.setLoginPwd(SaSecureUtil.sha256(newPwd));
+		backgroundAccountRepo.save(account);
+	}
 
 	@Transactional
 	public void updateBackgroundAccount(@Valid BackgroundAccountEditParam param) {
