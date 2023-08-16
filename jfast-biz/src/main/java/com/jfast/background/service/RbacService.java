@@ -21,11 +21,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import com.jfast.background.domain.BackgroundAccount;
+import com.jfast.background.domain.Role;
 import com.jfast.background.param.AddBackgroundAccountParam;
 import com.jfast.background.param.BackgroundAccountEditParam;
 import com.jfast.background.param.BackgroundAccountQueryCondParam;
+import com.jfast.background.param.RoleParam;
 import com.jfast.background.repo.BackgroundAccountRepo;
+import com.jfast.background.repo.RoleRepo;
 import com.jfast.background.vo.BackgroundAccountVO;
+import com.jfast.background.vo.RoleVO;
 import com.jfast.background.vo.SuperAdminVO;
 import com.jfast.common.exception.BizException;
 import com.jfast.common.vo.PageResult;
@@ -39,6 +43,38 @@ public class RbacService {
 
 	@Autowired
 	private BackgroundAccountRepo backgroundAccountRepo;
+	
+	@Autowired
+	private RoleRepo roleRepo;
+
+	@Transactional(readOnly = true)
+	public List<RoleVO> findAllRole() {
+		return RoleVO.convertFor(roleRepo.findByDeletedFlagFalse());
+	}
+
+	@Transactional(readOnly = true)
+	public RoleVO findRoleById(@NotBlank String id) {
+		return RoleVO.convertFor(roleRepo.getOne(id));
+	}
+
+	@Transactional
+	public void delRole(@NotBlank String id) {
+		Role role = roleRepo.getOne(id);
+		role.deleted();
+		roleRepo.save(role);
+	}
+
+	@Transactional
+	public void addOrUpdateRole(@Valid RoleParam param) {
+		if (StrUtil.isBlank(param.getId())) {
+			Role role = param.convertToPo();
+			roleRepo.save(role);
+		} else {
+			Role role = roleRepo.getOne(param.getId());
+			BeanUtils.copyProperties(param, role);
+			roleRepo.save(role);
+		}
+	}
 
 	@Transactional
 	public void modifySuperAdminLoginPwd(@NotBlank String accountId, @NotBlank String newPwd,
