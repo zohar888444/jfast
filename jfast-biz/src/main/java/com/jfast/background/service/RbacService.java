@@ -21,20 +21,26 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import com.jfast.background.domain.BackgroundAccount;
+import com.jfast.background.domain.Menu;
 import com.jfast.background.domain.Role;
 import com.jfast.background.param.AddBackgroundAccountParam;
 import com.jfast.background.param.BackgroundAccountEditParam;
 import com.jfast.background.param.BackgroundAccountQueryCondParam;
+import com.jfast.background.param.MenuParam;
 import com.jfast.background.param.RoleParam;
 import com.jfast.background.repo.BackgroundAccountRepo;
+import com.jfast.background.repo.MenuRepo;
 import com.jfast.background.repo.RoleRepo;
 import com.jfast.background.vo.BackgroundAccountVO;
+import com.jfast.background.vo.MenuVO;
 import com.jfast.background.vo.RoleVO;
 import com.jfast.background.vo.SuperAdminVO;
 import com.jfast.common.exception.BizException;
 import com.jfast.common.vo.PageResult;
+import com.jfast.constants.Constant;
 
 import cn.dev33.satoken.secure.SaSecureUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 
 @Validated
@@ -46,6 +52,76 @@ public class RbacService {
 	
 	@Autowired
 	private RoleRepo roleRepo;
+	
+	@Autowired
+	private MenuRepo menuRepo;
+	
+	@Transactional(readOnly = true)
+	public MenuVO findMenuById(@NotBlank String id) {
+		return MenuVO.convertFor(menuRepo.getOne(id));
+	}
+
+	@Transactional
+	public void delMenu(@NotBlank String id) {
+		List<Menu> subMenus = menuRepo.findByParentIdAndDeletedFlagFalse(id);
+		for (Menu subMenu : subMenus) {
+			List<Menu> btns = menuRepo.findByParentIdAndDeletedFlagFalse(subMenu.getId());
+			for (Menu btn : btns) {
+				btn.deleted();
+				menuRepo.save(btn);
+			}
+		}
+		if (CollectionUtil.isNotEmpty(subMenus)) {
+			for (Menu subMenu : subMenus) {
+				subMenu.deleted();
+				menuRepo.save(subMenu);
+			}
+		}
+		Menu menu = menuRepo.getOne(id);
+		menu.deleted();
+		menuRepo.save(menu);
+	}
+
+	@Transactional
+	public void addOrUpdateMenu(@Valid MenuParam param) {
+		if (StrUtil.isBlank(param.getId())) {
+			Menu menu = param.convertToPo();
+			menuRepo.save(menu);
+		} else {
+			Menu menu = menuRepo.getOne(param.getId());
+			BeanUtils.copyProperties(param, menu);
+			menuRepo.save(menu);
+		}
+	}
+
+	@Transactional(readOnly = true)
+	public List<MenuVO> findMenuTree() {
+		List<Menu> menus = menuRepo.findByDeletedFlagFalseOrderByOrderNo();
+		List<MenuVO> menuVOs = MenuVO.convertFor(menus);
+		return buildMenuTree(menuVOs);
+	}
+
+	public List<MenuVO> buildMenuTree(List<MenuVO> menuVOs) {
+		List<MenuVO> menu1s = new ArrayList<>();
+		List<MenuVO> menu2s = new ArrayList<>();
+		for (MenuVO m : menuVOs) {
+			if (Constant.菜单类型_一级菜单.equals(m.getType())) {
+				menu1s.add(m);
+			}
+			if (Constant.菜单类型_二级菜单.equals(m.getType())) {
+				menu2s.add(m);
+			}
+		}
+		for (MenuVO menu1 : menu1s) {
+			for (MenuVO menu2 : menu2s) {
+				if (menu1.getId().equals(menu2.getParentId())) {
+					menu1.getSubMenus().add(menu2);
+				}
+			}
+		}
+		return menu1s;
+
+	}
 
 	@Transactional(readOnly = true)
 	public List<RoleVO> findAllRole() {
