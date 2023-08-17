@@ -23,13 +23,16 @@ import org.springframework.validation.annotation.Validated;
 import com.jfast.background.domain.BackgroundAccount;
 import com.jfast.background.domain.Menu;
 import com.jfast.background.domain.Role;
+import com.jfast.background.domain.RoleMenu;
 import com.jfast.background.param.AddBackgroundAccountParam;
+import com.jfast.background.param.AssignMenuParam;
 import com.jfast.background.param.BackgroundAccountEditParam;
 import com.jfast.background.param.BackgroundAccountQueryCondParam;
 import com.jfast.background.param.MenuParam;
 import com.jfast.background.param.RoleParam;
 import com.jfast.background.repo.BackgroundAccountRepo;
 import com.jfast.background.repo.MenuRepo;
+import com.jfast.background.repo.RoleMenuRepo;
 import com.jfast.background.repo.RoleRepo;
 import com.jfast.background.vo.BackgroundAccountVO;
 import com.jfast.background.vo.MenuVO;
@@ -55,6 +58,28 @@ public class RbacService {
 	
 	@Autowired
 	private MenuRepo menuRepo;
+	
+	@Autowired
+	private RoleMenuRepo roleMenuRepo;
+	
+	@Transactional
+	public void assignMenu(@Valid AssignMenuParam param) {
+		List<RoleMenu> roleMenus = roleMenuRepo.findByRoleId(param.getRoleId());
+		roleMenuRepo.deleteAll(roleMenus);
+		for (String menuId : param.getMenuIds()) {
+			roleMenuRepo.save(RoleMenu.build(param.getRoleId(), menuId));
+		}
+	}
+
+	@Transactional(readOnly = true)
+	public List<MenuVO> findMenuByRoleId(@NotBlank String roleId) {
+		List<MenuVO> menuVOs = new ArrayList<>();
+		List<RoleMenu> roleMenus = roleMenuRepo.findByRoleId(roleId);
+		for (RoleMenu roleMenu : roleMenus) {
+			menuVOs.add(MenuVO.convertFor(roleMenu.getMenu()));
+		}
+		return menuVOs;
+	}
 	
 	@Transactional(readOnly = true)
 	public MenuVO findMenuById(@NotBlank String id) {
