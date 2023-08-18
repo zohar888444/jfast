@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<title></title>
+<link href="/js/tdesign/tdesign.min.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+.login-wrapper {
+	background-color: white;
+	background-image: url('/images/login-bg-white.png');
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	background-size: cover;
+	background-position: 100%;
+	position: relative;
+}
+
+.login-container {
+	position: absolute;
+	top: 22%;
+	left: 5%;
+	min-height: 500px;
+	line-height: 22px;
+}
+
+.title-container .title {
+	font-size: 36px;
+	line-height: 44px;
+	color: var(- -td-text-color-primary);
+	margin-top: 4px;
+}
+
+.item-container {
+	width: 400px;
+	margin-top: 48px;
+}
+
+.btn-container {
+	margin-top: 48px;
+}
+</style>
+</head>
+<body>
+	<script src="/js/tdesign/axios.min.js"></script>
+	<script src="https://cdn.staticfile.org/vue/2.6.9/vue.min.js"></script>
+	<script src="/js/tdesign/vue-composition-api.prod.js"></script>
+	<script src="/js/tdesign/tdesign.min.js"></script>
+	<div id="q-app">
+		<div class="login-wrapper">
+			<div class="login-container">
+				<div class="title-container">
+					<h1 class="title">运营后台</h1>
+				</div>
+				<t-form ref="form" :class="['item-container', 'login-password']" label-width="0"> <template> <t-form-item> <t-input v-model="userName" size="large"
+					placeholder="请输入账号"> <template #prefix-icon> <t-icon name="user"></t-icon> </template> </t-input> </t-form-item> <t-form-item> <t-input v-model="loginPwd" size="large" type="password"
+					placeholder="请输入登录密码"> <template #prefix-icon> <t-icon name="lock-on"></t-icon></template> </t-input> </t-form-item> </template> <t-form-item class="btn-container"> <t-button block size="large" @click="login">
+				登录 </t-button> </t-form-item> </t-form>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		var appVM = new Vue({
+			el : '#q-app',
+			data : function() {
+				return {
+					userName : '',
+					loginPwd : '',
+				}
+			},
+			mounted : function() {
+			},
+			methods : {
+
+				login : function() {
+					var that = this;
+					if (that.userName === null || that.userName === '') {
+						this.$message('warning', '请输入账号');
+						return;
+					}
+					if (that.loginPwd == null || that.loginPwd == '') {
+						this.$message('warning', '请输入密码');
+						return;
+					}
+					axios.post('/login', {
+						userName : that.userName,
+						loginPwd : that.loginPwd
+					}, {
+						headers : {
+							'Content-Type' : 'application/x-www-form-urlencoded'
+						}
+					}).then(function(response) {
+						var tokenInfo = response.data.data;
+						window.localStorage.setItem('tokenName', tokenInfo.tokenName);
+						window.localStorage.setItem('tokenValue', tokenInfo.tokenValue);
+					});
+				}
+
+			},
+		});
+	</script>
+</body>
+</html>
