@@ -46,6 +46,7 @@
 	<script src="https://cdn.staticfile.org/vue/2.6.9/vue.min.js"></script>
 	<script src="/js/tdesign/vue-composition-api.prod.js"></script>
 	<script src="/js/tdesign/tdesign.min.js"></script>
+	<script src="/js/common/common.js"></script>
 	<div id="q-app">
 		<div class="login-wrapper">
 			<div class="login-container">
@@ -93,6 +94,10 @@
 						var tokenInfo = response.data.data;
 						window.localStorage.setItem('tokenName', tokenInfo.tokenName);
 						window.localStorage.setItem('tokenValue', tokenInfo.tokenValue);
+						that.$notify('success', {
+							title : '提示',
+							content : '登录成功'
+						});
 					});
 				}
 

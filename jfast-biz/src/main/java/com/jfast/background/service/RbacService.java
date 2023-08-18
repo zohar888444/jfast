@@ -1,6 +1,7 @@
 package com.jfast.background.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -34,6 +35,7 @@ import com.jfast.background.repo.BackgroundAccountRepo;
 import com.jfast.background.repo.MenuRepo;
 import com.jfast.background.repo.RoleMenuRepo;
 import com.jfast.background.repo.RoleRepo;
+import com.jfast.background.vo.AccountAuthInfoVO;
 import com.jfast.background.vo.BackgroundAccountVO;
 import com.jfast.background.vo.MenuVO;
 import com.jfast.background.vo.RoleVO;
@@ -61,6 +63,18 @@ public class RbacService {
 	
 	@Autowired
 	private RoleMenuRepo roleMenuRepo;
+	
+	@Transactional
+	public void updateLatelyLoginTime(String id) {
+		BackgroundAccount account = backgroundAccountRepo.getOne(id);
+		account.setLatelyLoginTime(new Date());
+		backgroundAccountRepo.save(account);
+	}
+	
+	@Transactional(readOnly = true)
+	public AccountAuthInfoVO getAccountAuthInfo(@NotBlank String userName) {
+		return AccountAuthInfoVO.convertFor(backgroundAccountRepo.findByUserNameAndDeletedFlagIsFalse(userName));
+	}
 	
 	@Transactional
 	public void assignMenu(@Valid AssignMenuParam param) {

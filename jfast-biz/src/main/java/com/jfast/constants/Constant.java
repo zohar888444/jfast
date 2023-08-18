@@ -1,6 +1,8 @@
 package com.jfast.constants;
 
 public class Constant {
+	
+	public static final String 子系统_后台管理 = "admin";
 
 	public static final String 菜单类型_一级菜单 = "menu_1";
 
