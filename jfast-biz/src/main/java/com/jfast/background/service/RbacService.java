@@ -21,16 +21,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.jfast.background.domain.AccountRole;
 import com.jfast.background.domain.BackgroundAccount;
 import com.jfast.background.domain.Menu;
 import com.jfast.background.domain.Role;
 import com.jfast.background.domain.RoleMenu;
 import com.jfast.background.param.AddBackgroundAccountParam;
 import com.jfast.background.param.AssignMenuParam;
+import com.jfast.background.param.AssignRoleParam;
 import com.jfast.background.param.BackgroundAccountEditParam;
 import com.jfast.background.param.BackgroundAccountQueryCondParam;
 import com.jfast.background.param.MenuParam;
 import com.jfast.background.param.RoleParam;
+import com.jfast.background.repo.AccountRoleRepo;
 import com.jfast.background.repo.BackgroundAccountRepo;
 import com.jfast.background.repo.MenuRepo;
 import com.jfast.background.repo.RoleMenuRepo;
@@ -63,6 +66,28 @@ public class RbacService {
 	
 	@Autowired
 	private RoleMenuRepo roleMenuRepo;
+	
+	@Autowired
+	private AccountRoleRepo accountRoleRepo;
+	
+	@Transactional
+	public void assignRole(@Valid AssignRoleParam param) {
+		List<AccountRole> assignRoles = accountRoleRepo.findByAccountId(param.getAccountId());
+		accountRoleRepo.deleteAll(assignRoles);
+		for (String roleId : param.getRoleIds()) {
+			accountRoleRepo.save(AccountRole.build(param.getAccountId(), roleId));
+		}
+	}
+
+	@Transactional(readOnly = true)
+	public List<RoleVO> findRoleByAccountId(@NotBlank String accountId) {
+		List<RoleVO> roleVOs = new ArrayList<>();
+		List<AccountRole> accountRoles = accountRoleRepo.findByAccountId(accountId);
+		for (AccountRole accountRole : accountRoles) {
+			roleVOs.add(RoleVO.convertFor(accountRole.getRole()));
+		}
+		return roleVOs;
+	}
 	
 	@Transactional
 	public void updateLatelyLoginTime(String id) {
