@@ -1,8 +1,12 @@
 package com.jfast.background.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -57,19 +61,58 @@ public class RbacService {
 
 	@Autowired
 	private BackgroundAccountRepo backgroundAccountRepo;
-	
+
 	@Autowired
 	private RoleRepo roleRepo;
-	
+
 	@Autowired
 	private MenuRepo menuRepo;
-	
+
 	@Autowired
 	private RoleMenuRepo roleMenuRepo;
-	
+
 	@Autowired
 	private AccountRoleRepo accountRoleRepo;
-	
+
+	@Transactional(readOnly = true)
+	public List<MenuVO> findMenuTreeByAccountId(@NotBlank String accountId) {
+		List<String> roleIds = new ArrayList<>();
+		List<AccountRole> accountRoles = accountRoleRepo.findByAccountIdAndRoleDeletedFlagFalse(accountId);
+		if (CollectionUtil.isEmpty(accountRoles)) {
+			return findMenuTree();
+		}
+		for (AccountRole accountRole : accountRoles) {
+			roleIds.add(accountRole.getRoleId());
+		}
+		Map<String, Menu> menuMap = new HashMap<>();
+		List<String> menuIds = new ArrayList<>();
+		List<RoleMenu> roleMenus = roleMenuRepo.findByRoleIdIn(roleIds);
+		for (RoleMenu roleMenu : roleMenus) {
+			menuIds.add(roleMenu.getMenuId());
+		}
+		List<Menu> menus = menuRepo.findByIdInAndDeletedFlagFalseOrderByOrderNo(menuIds);
+		List<String> menu1Ids = new ArrayList<>();
+		for (Menu menu : menus) {
+			menuMap.put(menu.getId(), menu);
+			if (StrUtil.isNotBlank(menu.getParentId())) {
+				menu1Ids.add(menu.getParentId());
+			}
+		}
+		List<Menu> menu1s = menuRepo.findByIdInAndDeletedFlagFalseOrderByOrderNo(new ArrayList<>(menu1Ids));
+		for (Menu menu : menu1s) {
+			menuMap.put(menu.getId(), menu);
+		}
+		List<Menu> allMenus = new ArrayList<>(menuMap.values());
+		Collections.sort(allMenus, new Comparator<Menu>() {
+
+			@Override
+			public int compare(Menu o1, Menu o2) {
+				return o1.getOrderNo().compareTo(o2.getOrderNo());
+			}
+		});
+		return buildMenuTree(MenuVO.convertFor(allMenus));
+	}
+
 	@Transactional
 	public void assignRole(@Valid AssignRoleParam param) {
 		List<AccountRole> assignRoles = accountRoleRepo.findByAccountId(param.getAccountId());
@@ -88,19 +131,19 @@ public class RbacService {
 		}
 		return roleVOs;
 	}
-	
+
 	@Transactional
 	public void updateLatelyLoginTime(String id) {
 		BackgroundAccount account = backgroundAccountRepo.getOne(id);
 		account.setLatelyLoginTime(new Date());
 		backgroundAccountRepo.save(account);
 	}
-	
+
 	@Transactional(readOnly = true)
 	public AccountAuthInfoVO getAccountAuthInfo(@NotBlank String userName) {
 		return AccountAuthInfoVO.convertFor(backgroundAccountRepo.findByUserNameAndDeletedFlagIsFalse(userName));
 	}
-	
+
 	@Transactional
 	public void assignMenu(@Valid AssignMenuParam param) {
 		List<RoleMenu> roleMenus = roleMenuRepo.findByRoleId(param.getRoleId());
@@ -119,7 +162,7 @@ public class RbacService {
 		}
 		return menuVOs;
 	}
-	
+
 	@Transactional(readOnly = true)
 	public MenuVO findMenuById(@NotBlank String id) {
 		return MenuVO.convertFor(menuRepo.getOne(id));
@@ -258,6 +301,11 @@ public class RbacService {
 		BackgroundAccount userAccount = backgroundAccountRepo.getOne(param.getId());
 		BeanUtils.copyProperties(param, userAccount);
 		backgroundAccountRepo.save(userAccount);
+	}
+	
+	@Transactional(readOnly = true)
+	public BackgroundAccountVO findBackgroundAccountById(@NotBlank String accountId) {
+		return BackgroundAccountVO.convertFor(backgroundAccountRepo.getOne(accountId));
 	}
 
 	@Transactional(readOnly = true)
