@@ -19,8 +19,7 @@
 			src="/images/baseLogo-light.png" alt="logo" /> </template> <template v-for="(menu, index) in menus"> <template v-if="!hasSubMenu(menu)"> <t-menu-item :value="menu.url">{{menu.name}}</t-menu-item>
 		</template> <template v-if="hasSubMenu(menu)"> <t-submenu :value="menu.name" :title="menu.name"> <t-menu-item v-for="subMenu in menu.subMenus" :value="subMenu.url">{{subMenu.name}}</t-menu-item>
 		</t-submenu> </template> </template> <template #operations> <t-dropdown trigger="click"> <t-button theme="default" variant="text"> <template #icon> <t-icon name="user-circle"></t-icon> </template>
-		{{userName}} <template #suffix> <t-icon name="chevron-down"></t-icon> </template> </t-button> <t-dropdown-menu> <t-dropdown-item @click="navTo('/page/google-auth')"> <t-icon
-			name="secured"></t-icon>谷歌验证器</t-dropdown-item> <t-dropdown-item @click="refreshCache"> <t-icon name="refresh"></t-icon>刷新缓存</t-dropdown-item> <t-dropdown-item @click="logout"> <t-icon
+		{{userName}} <template #suffix> <t-icon name="chevron-down"></t-icon> </template> </t-button> <t-dropdown-menu> <t-dropdown-item @click="logout"> <t-icon
 			name="poweroff"></t-icon> 退出登录 </t-dropdown-item> </t-dropdown-menu> </t-dropdown> </template> </t-head-menu>
 	</div>
 	<script src="/js/common/header.js"></script>
