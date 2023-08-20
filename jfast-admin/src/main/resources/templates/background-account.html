@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style type="text/css">
+	</style>
+</head>
+
+<body>
+	<div th:replace="common/header::html"></div>
+	<div id="q-app">
+		<t-dialog header="修改登录密码" :close-on-overlay-click="false" :visible="showUpdateLoginPwdDialogFlag"
+			:cancel-btn="null" confirm-btn="确定" @close="showUpdateLoginPwdDialogFlag = false;"
+			@confirm="updateLoginPwd">
+			<div slot="body">
+				<t-form label-align="left">
+					<t-form-item label="修改后的密码"> <t-input v-model="pwd"></t-input>
+					</t-form-item>
+				</t-form>
+			</div>
+		</t-dialog>
+
+		<t-dialog header="编辑账号" :close-on-overlay-click="false" :visible="showEditDialogFlag" :cancel-btn="null"
+			confirm-btn="确定" @close="showEditDialogFlag = false;" @confirm="updateAccount">
+			<div slot="body">
+				<t-form label-align="left">
+					<t-form-item label="账号"> <t-input v-model="selectedAccount.userName"></t-input>
+					</t-form-item>
+					<t-form-item label="账号状态">
+						<t-radio-group v-model="selectedAccount.state">
+							<t-radio v-for="dictItem in functionStateDictItems"
+								:value="dictItem.dictItemCode">{{dictItem.dictItemName}}</t-radio>
+						</t-radio-group>
+					</t-form-item>
+				</t-form>
+			</div>
+		</t-dialog>
+		<t-dialog header="新增账号" :close-on-overlay-click="false" :visible="showAddDialogFlag" :cancel-btn="null"
+			confirm-btn="确定" @close="showAddDialogFlag = false;" @confirm="addAccount">
+			<div slot="body">
+				<t-form label-align="left">
+					<t-form-item label="账号"> <t-input v-model="selectedAccount.userName"></t-input>
+					</t-form-item>
+					<t-form-item label="登录密码"> <t-input v-model="selectedAccount.loginPwd"></t-input>
+					</t-form-item>
+				</t-form>
+			</div>
+		</t-dialog>
+		<div class="page-content">
+			<div class="page-content-inner">
+				<t-form :data="formData" :style="{ marginBottom: '8px' }" ref="form"> <t-row align="middle"> <t-col
+							:span="9"> <t-row class="query-form-row"> <t-col :flex="1">
+									<t-form-item label="账号"> <t-input v-model="formData.userName"
+											placeholder="请输入"></t-input> </t-form-item> </t-col> </t-row> </t-col>
+						<t-col :span="3" class="table-top-action"> <t-button theme="primary" @click="refreshTable"> 查询
+							</t-button>
+							<t-button variant="outline" theme="success" @click="showAddDialog">新增账号</t-button>
+						</t-col> </t-row> </t-form>
+				<t-table :data="tableData" :columns="columns" table-layout="auto" row-key="id" :hover="true"
+					:loading="isLoading" :pagination="pagination" @page-change="onPageChange">
+					<template #security_setting="{ row }">
+						<div class="table-custom-row">
+							<div>
+								谷歌验证器:{{row.googleAuthBindTime ? '已设置' : '未设置'}}
+								<t-button theme="success" v-show="row.googleAuthBindTime"
+									@click="unBindGoogleAuth(row.id)">重置</t-button>
+							</div>
+						</div>
+					</template>
+					<template #action="{ row }">
+						<div>
+							<t-button theme="primary" @click="showEditDialog(row.id)">编辑</t-button>
+							<t-dropdown trigger="click"> <t-button theme="primary">更多<template #suffix> <t-icon
+											name="chevron-down"></t-icon> </template> </t-button> <t-dropdown-menu>
+									<t-dropdown-item @click="showUpdateLoginPwdDialog(row.id)">修改登录密码</t-dropdown-item>
+									<t-dropdown-item @click="delAccount(row.id)">删除账号</t-dropdown-item>
+								</t-dropdown-menu> </t-dropdown>
+						</div>
+					</template>
+				</t-table>
+			</div>
+		</div>
+	</div>
+	<script src="/js/background-account.js"></script>
+</body>
+
+</html>

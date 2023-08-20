@@ -7,6 +7,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/page")
 public class PageController {
+	
+	@GetMapping("/background-account")
+	public String backgroundAccount() {
+		return "background-account";
+	}
 
 	@GetMapping("/login")
 	public String login() {

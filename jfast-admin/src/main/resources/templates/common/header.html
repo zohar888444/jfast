@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<title></title>
+<link href="/js/tdesign/tdesign.min.css" rel="stylesheet" type="text/css">
+<link href="/css/common/common.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+</style>
+</head>
+<body>
+	<script src="/js/tdesign/axios.min.js"></script>
+	<script src="https://cdn.staticfile.org/vue/2.6.9/vue.min.js"></script>
+	<script src="/js/tdesign/vue-composition-api.prod.js"></script>
+	<script src="/js/tdesign/tdesign.min.js"></script>
+	<script src="/js/common/common.js"></script>
+	<div id="header" class="header-nav">
+		<t-head-menu theme="light" expand-type="popup" :value="activedMenu" @change="navTo" v-if="menus.length > 0"> <template #logo> <img height="26"
+			src="/images/baseLogo-light.png" alt="logo" /> </template> <template v-for="(menu, index) in menus"> <template v-if="!hasSubMenu(menu)"> <t-menu-item :value="menu.url">{{menu.name}}</t-menu-item>
+		</template> <template v-if="hasSubMenu(menu)"> <t-submenu :value="menu.name" :title="menu.name"> <t-menu-item v-for="subMenu in menu.subMenus" :value="subMenu.url">{{subMenu.name}}</t-menu-item>
+		</t-submenu> </template> </template> <template #operations> <t-dropdown trigger="click"> <t-button theme="default" variant="text"> <template #icon> <t-icon name="user-circle"></t-icon> </template>
+		{{userName}} <template #suffix> <t-icon name="chevron-down"></t-icon> </template> </t-button> <t-dropdown-menu> <t-dropdown-item @click="navTo('/page/google-auth')"> <t-icon
+			name="secured"></t-icon>谷歌验证器</t-dropdown-item> <t-dropdown-item @click="refreshCache"> <t-icon name="refresh"></t-icon>刷新缓存</t-dropdown-item> <t-dropdown-item @click="logout"> <t-icon
+			name="poweroff"></t-icon> 退出登录 </t-dropdown-item> </t-dropdown-menu> </t-dropdown> </template> </t-head-menu>
+	</div>
+	<script src="/js/common/header.js"></script>
+</body>
+</html>

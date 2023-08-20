@@ -94,12 +94,32 @@
 						var tokenInfo = response.data.data;
 						window.localStorage.setItem('tokenName', tokenInfo.tokenName);
 						window.localStorage.setItem('tokenValue', tokenInfo.tokenValue);
-						that.$notify('success', {
-							title : '提示',
-							content : '登录成功'
-						});
+						that.loadMenu();
 					});
-				}
+				},
+				
+				loadMenu : function() {
+					var that = this;
+					axios.get('/rbac/findMyMenuTree', {
+						params : {}
+					}).then(function(response) {
+						var menus = response.data.data;
+						for (var i = 0; i < menus.length; i++) {
+							var menu = menus[i];
+							if (menu.url != null && menu.url != '') {
+								window.location.href = menu.url;
+								return;
+							}
+							for (var j = 0; j < menu.subMenus.length; j++) {
+								var subMenu = menu.subMenus[j];
+								if (subMenu.url != null && subMenu.url != '') {
+									window.location.href = subMenu.url;
+									return;
+								}
+							}
+						}
+					});
+				},
 
 			},
 		});

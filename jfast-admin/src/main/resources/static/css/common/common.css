@@ -1,0 +1,63 @@
+@charset "UTF-8";
+
+[v-cloak] {
+	display: none;
+}
+
+body {
+	margin: 0px;
+}
+
+.header-nav {
+	padding-left: 16px;
+	padding-right: 16px;
+}
+
+.page-content {
+	padding: 10px 16px;
+	background: #efeded;
+}
+
+.page-content-inner {
+	background: white;
+	padding: 16px 16px;
+}
+
+.query-form-row {
+	margin-top: 6px !important;
+	margin-bottom: 6px !important;
+}
+
+.query-form-row .t-date-range-picker {
+	width: 100%;
+}
+
+.table-custom-row {
+	font-size: small;
+}
+
+.table-custom-row div {
+	/* height: 20px; */
+	line-height: 20px;
+}
+
+.table-top-action {
+	text-align: right;
+}
+
+.table-suttotal {
+	display: inline-block;
+	background: #c9d3c9;
+	padding: 6px;
+	color: #22af22;
+}
+
+.copy-btn {
+	padding-left: 4px;
+	cursor: pointer;
+}
+
+.qrcode-btn {
+	padding-left: 4px;
+	cursor: pointer;
+}
