@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/page")
 public class PageController {
 	
+	@GetMapping("/menu-manage")
+	public String menuManage() {
+		return "menu-manage";
+	}
+	
 	@GetMapping("/background-account")
 	public String backgroundAccount() {
 		return "background-account";

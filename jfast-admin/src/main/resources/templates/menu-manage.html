@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style type="text/css">
+	</style>
+</head>
+
+<body>
+	<div th:replace="common/header::html"></div>
+	<div id="q-app">
+
+		<t-dialog header="编辑菜单" :close-on-overlay-click="false" :visible="showEditDialogFlag" :cancel-btn="null"
+			confirm-btn="确定" @close="showEditDialogFlag = false;" @confirm="updateMenu">
+			<div slot="body">
+				<t-form label-align="left">
+					<t-form-item label="菜单名"> <t-input v-model="selectedMenu.name"></t-input>
+					</t-form-item>
+					<t-form-item label="url"> <t-input v-model="selectedMenu.url"></t-input>
+					</t-form-item>
+					<t-form-item label="排序号"> <t-input v-model="selectedMenu.orderNo"></t-input>
+					</t-form-item>
+				</t-form>
+			</div>
+		</t-dialog>
+		<t-dialog header="新增菜单" :close-on-overlay-click="false" :visible="showAddDialogFlag" :cancel-btn="null"
+			confirm-btn="确定" @close="showAddDialogFlag = false;" @confirm="addMenu">
+			<div slot="body">
+				<t-form label-align="left">
+					<t-form-item label="对应主菜单" v-show="selectedMenu.parentId"> <t-input
+							v-model="selectedMenu.parentName" :disabled="true"></t-input>
+					</t-form-item>
+					<t-form-item label="菜单名"> <t-input v-model="selectedMenu.name"></t-input>
+					</t-form-item>
+					<t-form-item label="url"> <t-input v-model="selectedMenu.url"></t-input>
+					</t-form-item>
+					<t-form-item label="排序号"> <t-input v-model="selectedMenu.orderNo"></t-input>
+					</t-form-item>
+				</t-form>
+			</div>
+		</t-dialog>
+
+		<div class="page-content">
+			<div class="page-content-inner">
+				<t-card title="后台菜单" :bordered="false">
+					<template #actions>
+						<t-button theme="primary" @click="showAddDialog(null, null)">新增主菜单</t-button>
+					</template>
+					<div>
+						<t-row> <t-col :span="4">
+								<template v-if="menuTrees.length > 0">
+								<t-tree :data="menuTrees" hover :checkable="false" :check-strictly="false"
+									value-mode="all" :keys="treeCustomKey">
+									<template #operations="{ node }">
+										<div>
+											<t-button size="small" variant="base" v-show="node.data.type == 'menu_1'"
+												@click="showAddDialog(node.data.id, node.data.name)">添加下级菜单</t-button>
+											<t-button size="small" variant="base"
+												@click="showEditDialog(node.data.id, node.data)">编辑</t-button>
+											<t-button size="small" variant="base" theme="danger"
+												@click="delMenu(node.data.id)">删除</t-button>
+										</div>
+									</template>
+								</t-tree>
+							</template>
+							</t-col></t-row>
+					</div>
+				</t-card>
+			</div>
+		</div>
+	</div>
+	<script src="/js/menu-manage.js"></script>
+</body>
+
+</html>

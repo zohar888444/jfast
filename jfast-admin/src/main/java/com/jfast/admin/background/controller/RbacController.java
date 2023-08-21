@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.jfast.background.param.AddBackgroundAccountParam;
 import com.jfast.background.param.BackgroundAccountEditParam;
 import com.jfast.background.param.BackgroundAccountQueryCondParam;
+import com.jfast.background.param.MenuParam;
 import com.jfast.background.service.RbacService;
 import com.jfast.background.vo.BackgroundAccountVO;
 import com.jfast.background.vo.MenuVO;
@@ -23,9 +24,35 @@ import cn.dev33.satoken.stp.StpUtil;
 @Controller
 @RequestMapping("/rbac")
 public class RbacController {
-	
+
 	@Autowired
 	private RbacService rbacService;
+
+	@GetMapping("/findMenuById")
+	@ResponseBody
+	public Result<MenuVO> findMenuById(String id) {
+		return Result.success(rbacService.findMenuById(id));
+	}
+
+	@GetMapping("/delMenu")
+	@ResponseBody
+	public Result<String> delMenu(String id) {
+		rbacService.delMenu(id);
+		return Result.success();
+	}
+
+	@PostMapping("/addOrUpdateMenu")
+	@ResponseBody
+	public Result<String> addOrUpdateMenu(MenuParam param) {
+		rbacService.addOrUpdateMenu(param);
+		return Result.success();
+	}
+
+	@GetMapping("/findMenuTree")
+	@ResponseBody
+	public Result<List<MenuVO>> findMenuTree() {
+		return Result.success(rbacService.findMenuTree());
+	}
 
 	@GetMapping("/findBackgroundAccountByPage")
 	@ResponseBody
@@ -80,6 +107,5 @@ public class RbacController {
 	public Result<List<MenuVO>> findMyMenuTree() {
 		return Result.success(rbacService.findMenuTreeByAccountId(StpUtil.getLoginIdAsString()));
 	}
-
 
 }
