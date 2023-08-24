@@ -13,9 +13,11 @@ import com.jfast.background.param.AddBackgroundAccountParam;
 import com.jfast.background.param.BackgroundAccountEditParam;
 import com.jfast.background.param.BackgroundAccountQueryCondParam;
 import com.jfast.background.param.MenuParam;
+import com.jfast.background.param.RoleParam;
 import com.jfast.background.service.RbacService;
 import com.jfast.background.vo.BackgroundAccountVO;
 import com.jfast.background.vo.MenuVO;
+import com.jfast.background.vo.RoleVO;
 import com.jfast.common.vo.PageResult;
 import com.jfast.common.vo.Result;
 
@@ -27,6 +29,32 @@ public class RbacController {
 
 	@Autowired
 	private RbacService rbacService;
+	
+	@GetMapping("/findAllRole")
+	@ResponseBody
+	public Result<List<RoleVO>> findAllRole() {
+		return Result.success(rbacService.findAllRole());
+	}
+
+	@PostMapping("/addOrUpdateRole")
+	@ResponseBody
+	public Result<String> addOrUpdateRole(RoleParam param) {
+		rbacService.addOrUpdateRole(param);
+		return Result.success();
+	}
+
+	@GetMapping("/delRole")
+	@ResponseBody
+	public Result<String> delRole(String id) {
+		rbacService.delRole(id);
+		return Result.success();
+	}
+
+	@GetMapping("/findRoleById")
+	@ResponseBody
+	public Result<RoleVO> findRoleById(String id) {
+		return Result.success(rbacService.findRoleById(id));
+	}
 
 	@GetMapping("/findMenuById")
 	@ResponseBody

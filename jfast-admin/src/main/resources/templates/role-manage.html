@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style type="text/css">
+	</style>
+</head>
+
+<body>
+	<div th:replace="common/header::html"></div>
+	<div id="q-app">
+		<t-dialog header="编辑角色" :close-on-overlay-click="false" :visible="showEditDialogFlag" :cancel-btn="null"
+			confirm-btn="确定" @close="showEditDialogFlag = false;" @confirm="updateRole">
+			<div slot="body">
+				<t-form label-align="left">
+					<t-form-item label="角色名"> <t-input v-model="selectedRole.name"></t-input>
+					</t-form-item>
+				</t-form>
+			</div>
+		</t-dialog>
+
+		<t-dialog header="编辑角色" :close-on-overlay-click="false" :visible="showAddDialogFlag" :cancel-btn="null"
+			confirm-btn="确定" @close="showAddDialogFlag = false;" @confirm="addRole">
+			<div slot="body">
+				<t-form label-align="left">
+					<t-form-item label="角色名"> <t-input v-model="selectedRole.name"></t-input>
+					</t-form-item>
+				</t-form>
+			</div>
+		</t-dialog>
+
+		<div class="page-content">
+			<div class="page-content-inner">
+				<t-card title="后台角色" :bordered="false">
+					<template #actions>
+						<t-button theme="primary" @click="showAddDialog">新增角色</t-button>
+					</template>
+					<div class="t-table t-table--hoverable">
+						<div class="t-table__content">
+							<table class="t-table--layout-fixed">
+								<thead class="t-table__header">
+									<tr>
+										<th>角色名</th>
+										<th>创建时间</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody class="t-table__body">
+									<tr v-for="(role, index) in roles">
+										<td>
+											{{role.name}}
+										</td>
+										<td>
+											{{role.createTime}}
+										</td>
+										<td>
+											<t-button theme="primary" @click="showEditDialog(role.id)">编辑</t-button>
+											<t-dropdown trigger="click"> <t-button theme="primary">更多<template #suffix>
+														<t-icon name="chevron-down"></t-icon> </template> </t-button>
+												<t-dropdown-menu>
+													<t-dropdown-item @click="delRole(role.id)">删除角色</t-dropdown-item>
+												</t-dropdown-menu> </t-dropdown>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</t-card>
+			</div>
+		</div>
+	</div>
+	<script src="/js/role-manage.js"></script>
+</body>
+
+</html>

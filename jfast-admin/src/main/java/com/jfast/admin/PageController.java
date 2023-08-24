@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/page")
 public class PageController {
 	
+	@GetMapping("/role-manage")
+	public String roleManage() {
+		return "role-manage";
+	}
+	
 	@GetMapping("/menu-manage")
 	public String menuManage() {
 		return "menu-manage";
