@@ -11,6 +11,16 @@
 <body>
 	<div th:replace="common/header::html"></div>
 	<div id="q-app">
+		<t-dialog header="分配菜单" :close-on-overlay-click="false" :visible="showAssignMenuDialogFlag" :cancel-btn="null"
+			confirm-btn="确定" @close="showAssignMenuDialogFlag = false;" @confirm="assignMenu">
+			<div slot="body">
+				<t-checkbox v-model="selectedAllMenu" @change="toggleSelectedAllMenu">全选/全不选</t-checkbox>
+				<div style="height: 400px; overflow: auto;">
+					<t-tree :data="menuTrees" hover :checkable="true" :check-strictly="false" value-mode="all"
+						:keys="treeCustomKey" :value.sync="selectedMenuIds"></t-tree>
+				</div>
+			</div>
+		</t-dialog>
 		<t-dialog header="编辑角色" :close-on-overlay-click="false" :visible="showEditDialogFlag" :cancel-btn="null"
 			confirm-btn="确定" @close="showEditDialogFlag = false;" @confirm="updateRole">
 			<div slot="body">
@@ -60,6 +70,8 @@
 											<t-dropdown trigger="click"> <t-button theme="primary">更多<template #suffix>
 														<t-icon name="chevron-down"></t-icon> </template> </t-button>
 												<t-dropdown-menu>
+													<t-dropdown-item
+														@click="showAssignMenuDialog(role.id)">分配菜单</t-dropdown-item>
 													<t-dropdown-item @click="delRole(role.id)">删除角色</t-dropdown-item>
 												</t-dropdown-menu> </t-dropdown>
 										</td>

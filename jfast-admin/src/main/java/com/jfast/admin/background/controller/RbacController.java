@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jfast.background.param.AddBackgroundAccountParam;
+import com.jfast.background.param.AssignMenuParam;
 import com.jfast.background.param.BackgroundAccountEditParam;
 import com.jfast.background.param.BackgroundAccountQueryCondParam;
 import com.jfast.background.param.MenuParam;
@@ -29,7 +31,20 @@ public class RbacController {
 
 	@Autowired
 	private RbacService rbacService;
-	
+
+	@PostMapping("/assignMenu")
+	@ResponseBody
+	public Result<String> assignMenu(@RequestBody AssignMenuParam param) {
+		rbacService.assignMenu(param);
+		return Result.success();
+	}
+
+	@GetMapping("/findMenuByRoleId")
+	@ResponseBody
+	public Result<List<MenuVO>> findMenuByRoleId(String roleId) {
+		return Result.success(rbacService.findMenuByRoleId(roleId));
+	}
+
 	@GetMapping("/findAllRole")
 	@ResponseBody
 	public Result<List<RoleVO>> findAllRole() {

@@ -13,12 +13,87 @@ var appVM = new Vue({
 			selectedRole: '',
 			selectedRoleId: '',
 			showEditDialogFlag: false,
+			
+			showAssignMenuDialogFlag: false,
+			menuTrees: [],
+			selectedMenuIds: [],
+			selectedAllMenu: false,
 		}
 	},
 	mounted: function () {
 		this.refreshTable();
+		this.findMenuTree();
 	},
 	methods: {
+		
+		toggleSelectedAllMenu: function () {
+			if (this.selectedAllMenu) {
+				var selectedMenuIds = [];
+				for (var i = 0; i < this.menuTrees.length; i++) {
+					var menuTree = this.menuTrees[i];
+					for (var j = 0; j < menuTree.subMenus.length; j++) {
+						var subMenu = menuTree.subMenus[j];
+						selectedMenuIds.push(subMenu.id);
+					}
+					selectedMenuIds.push(menuTree.id);
+				}
+				this.selectedMenuIds = selectedMenuIds;
+			} else {
+				this.selectedMenuIds = [];
+			}
+		},
+
+		assignMenu: function () {
+			var that = this;
+			axios.post('/rbac/assignMenu', {
+				roleId: that.selectedRoleId,
+				menuIds: that.selectedMenuIds
+			}, {
+				headers: {
+				}
+			}).then(function (response) {
+				that.$notify('success', {
+					title: '提示',
+					content: '操作成功'
+				});
+				that.showAssignMenuDialogFlag = false;
+				that.refreshTable();
+			});
+		},
+
+		findMenuTree: function () {
+			var that = this;
+			axios.get('/rbac/findMenuTree', {
+				params: {
+				}
+			}).then(function (response) {
+				that.menuTrees = response.data.data;
+			});
+		},
+
+		showAssignMenuDialog: function (id) {
+			var that = this;
+			that.showAssignMenuDialogFlag = true;
+			that.selectedAllMenu = false;
+			that.selectedRoleId = id;
+			axios.get('/rbac/findMenuByRoleId', {
+				params: {
+					roleId: id
+				}
+			}).then(function (response) {
+				var selectedMenus = response.data.data;
+				var selectedMenuIds = [];
+				for (var i = 0; i < selectedMenus.length; i++) {
+					var selectedMenu = selectedMenus[i];
+					for (var j = 0; j < selectedMenu.subMenus.length; j++) {
+						var subMenu = selectedMenu.subMenus[j];
+						selectedMenuIds.push(subMenu.id);
+					}
+					selectedMenuIds.push(selectedMenu.id);
+				}
+				that.selectedMenuIds = selectedMenuIds;
+			});
+		},
 
 		delRole: function (id) {
 			var that = this;
