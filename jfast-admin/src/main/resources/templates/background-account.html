@@ -11,6 +11,16 @@
 <body>
 	<div th:replace="common/header::html"></div>
 	<div id="q-app">
+		<t-dialog header="分配角色" :close-on-overlay-click="false" :visible="showAssignRoleDialogFlag" :cancel-btn="null"
+			confirm-btn="确定" @close="showAssignRoleDialogFlag = false;" @confirm="assignRole">
+			<div slot="body">
+				<t-form label-align="left">
+					<t-form-item label="角色">
+						<t-checkbox-group v-model="selectedRoleIds" :options="roleDictItems"></t-checkbox-group>
+					</t-form-item>
+				</t-form>
+			</div>
+		</t-dialog>
 		<t-dialog header="修改登录密码" :close-on-overlay-click="false" :visible="showUpdateLoginPwdDialogFlag"
 			:cancel-btn="null" confirm-btn="确定" @close="showUpdateLoginPwdDialogFlag = false;"
 			@confirm="updateLoginPwd">
@@ -75,6 +85,7 @@
 							<t-dropdown trigger="click"> <t-button theme="primary">更多<template #suffix> <t-icon
 											name="chevron-down"></t-icon> </template> </t-button> <t-dropdown-menu>
 									<t-dropdown-item @click="showUpdateLoginPwdDialog(row.id)">修改登录密码</t-dropdown-item>
+									<t-dropdown-item @click="showAssignRoleDialog(row.id)">分配角色</t-dropdown-item>
 									<t-dropdown-item @click="delAccount(row.id)">删除账号</t-dropdown-item>
 								</t-dropdown-menu> </t-dropdown>
 						</div>

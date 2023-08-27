@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jfast.background.param.AddBackgroundAccountParam;
 import com.jfast.background.param.AssignMenuParam;
+import com.jfast.background.param.AssignRoleParam;
 import com.jfast.background.param.BackgroundAccountEditParam;
 import com.jfast.background.param.BackgroundAccountQueryCondParam;
 import com.jfast.background.param.MenuParam;
@@ -31,6 +32,19 @@ public class RbacController {
 
 	@Autowired
 	private RbacService rbacService;
+
+	@PostMapping("/assignRole")
+	@ResponseBody
+	public Result<String> assignRole(@RequestBody AssignRoleParam param) {
+		rbacService.assignRole(param);
+		return Result.success();
+	}
+
+	@GetMapping("/findRoleByAccountId")
+	@ResponseBody
+	public Result<List<RoleVO>> findRoleByAccountId(String accountId) {
+		return Result.success(rbacService.findRoleByAccountId(accountId));
+	}
 
 	@PostMapping("/assignMenu")
 	@ResponseBody

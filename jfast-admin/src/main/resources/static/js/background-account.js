@@ -53,9 +53,70 @@ var appVM = new Vue({
 		}
 	},
 	mounted : function() {
+		this.findAllRole();
 		this.loadTableData();
 	},
 	methods : {
+		
+		assignRole : function() {
+			var that = this;
+			axios.post('/rbac/assignRole', {
+				accountId: that.selectedAccountId,
+				roleIds: that.selectedRoleIds
+			}, {
+				headers: {
+				}
+			}).then(function (response) {
+				that.$notify('success', {
+					title: '提示',
+					content: '操作成功'
+				});
+				that.showAssignRoleDialogFlag = false;
+				that.refreshTable();
+			});
+		},
+
+		showAssignRoleDialog : function(id) {
+			var that = this;
+			that.showAssignRoleDialogFlag = true;
+			that.selectedAccountId = id;
+			axios.get('/rbac/findRoleByAccountId', {
+				params: {
+					accountId : id
+				}
+			}).then(function (response) {
+				var selectedRoleIds = [];
+				var selectedRoles = response.data.data;
+				for (var i = 0; i < that.roleDictItems.length; i++) {
+					var roleDictItem = that.roleDictItems[i];
+					for (var j = 0; j < selectedRoles.length; j++) {
+						if (roleDictItem.value == selectedRoles[j].id) {
+							selectedRoleIds.push(selectedRoles[j].id);
+							break;
+						}
+					}
+				}
+				that.selectedRoleIds = selectedRoleIds;
+			});
+		},
+
+		findAllRole : function() {
+			var that = this;
+			axios.get('/rbac/findAllRole', {
+				params: {
+				}
+			}).then(function (response) {
+				var roleDictItems = [];
+				var roles = response.data.data;
+				for (var i = 0; i < roles.length; i++) {
+					roleDictItems.push({
+						value : roles[i].id,
+						label : roles[i].name,
+					});
+				}
+				that.roleDictItems = roleDictItems;
+			});
+		},
 
 		showUpdateLoginPwdDialog: function (id) {
 			this.selectedAccountId = id;
