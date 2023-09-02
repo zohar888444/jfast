@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style type="text/css">
+	</style>
+</head>
+
+<body>
+	<div th:replace="common/header::html"></div>
+	<div id="q-app">
+		<div class="page-content">
+			<div class="page-content-inner">
+				<t-form :data="formData" :style="{ marginBottom: '8px' }" ref="form"> <t-row align="middle"> <t-col
+							:span="9"> <t-row class="query-form-row"> <t-col :flex="1">
+									<t-form-item label="登录账号"> <t-input v-model="formData.userName"
+											placeholder="请输入"></t-input> </t-form-item> </t-col> <t-col :flex="1">
+									<t-form-item label="IP地址"> <t-input v-model="formData.ipAddr"
+											placeholder="请输入"></t-input> </t-form-item> </t-col> </t-row> <t-row
+								class="query-form-row"> <t-col :flex="1"> <t-form-item label="登录状态"> <t-select clearable
+											v-model="formData.state" :options="loginStateDictItems" placeholder="请选择"
+											:keys="{ label: 'dictItemName', value: 'dictItemCode' }"></t-select></t-col>
+								<t-col :flex="1"> <t-form-item label="登录时间">
+										<t-date-range-picker allow-input clearable
+											ref="loginTimeRangePicker"></t-date-range-picker> </t-form-item> </t-col>
+							</t-row> </t-col> <t-col :span="3" class="table-top-action"> <t-button theme="primary"
+								@click="refreshTable"> 查询 </t-button> </t-col> </t-row> </t-form>
+				<t-table :data="tableData" :columns="columns" row-key="id" :hover="true" :loading="isLoading"
+					:pagination="pagination" @page-change="onPageChange"> <template #login_state="{ row }">
+						<div class="table-custom-row">
+							<div>{{row.state == '1' ? '登录成功' : '登录失败'}}</div>
+							<div v-show="row.state == '0'">{{row.msg}}</div>
+						</div>
+					</template> </t-table>
+			</div>
+		</div>
+	</div>
+	<script src="/js/login-log.js"></script>
+</body>
+
+</html>
