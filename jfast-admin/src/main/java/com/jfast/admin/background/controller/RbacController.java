@@ -21,14 +21,18 @@ import com.jfast.background.service.RbacService;
 import com.jfast.background.vo.BackgroundAccountVO;
 import com.jfast.background.vo.MenuVO;
 import com.jfast.background.vo.RoleVO;
+import com.jfast.common.operlog.OperLog;
 import com.jfast.common.vo.PageResult;
 import com.jfast.common.vo.Result;
+import com.jfast.constants.Constant;
 
 import cn.dev33.satoken.stp.StpUtil;
 
 @Controller
 @RequestMapping("/rbac")
 public class RbacController {
+	
+	public static final String 模块_后台账号 = "后台账号";
 
 	@Autowired
 	private RbacService rbacService;
@@ -145,6 +149,7 @@ public class RbacController {
 		return Result.success(accountInfo);
 	}
 
+	@OperLog(subSystem = Constant.子系统_后台管理, module = 模块_后台账号, operate = "删除账号")
 	@GetMapping("/delBackgroundAccount")
 	@ResponseBody
 	public Result<String> delBackgroundAccount(String id) {
@@ -152,6 +157,7 @@ public class RbacController {
 		return Result.success();
 	}
 
+	@OperLog(subSystem = Constant.子系统_后台管理, module = 模块_后台账号, operate = "新增账号")
 	@PostMapping("/addBackgroundAccount")
 	@ResponseBody
 	public Result<String> addBackgroundAccount(AddBackgroundAccountParam param) {

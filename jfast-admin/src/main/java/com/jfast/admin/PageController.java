@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/page")
 public class PageController {
 
+	@GetMapping("/oper-log")
+	public String operLog() {
+		return "oper-log";
+	}
+
 	@GetMapping("/login-log")
 	public String loginLog() {
 		return "login-log";

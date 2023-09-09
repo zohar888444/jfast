@@ -23,8 +23,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.alibaba.fastjson.JSON;
-import com.jfast.background.service.OperLogService;
 import com.jfast.common.utils.IdUtils;
+import com.jfast.log.service.OperLogService;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ArrayUtil;
@@ -37,7 +37,7 @@ public class OperLogAspect {
 	@Autowired
 	private OperLogService operLogService;
 
-	@Pointcut("@annotation(com.paywrap.common.operlog.OperLog)")
+	@Pointcut("@annotation(com.jfast.common.operlog.OperLog)")
 	public void operLogAspect() {
 	}
 
