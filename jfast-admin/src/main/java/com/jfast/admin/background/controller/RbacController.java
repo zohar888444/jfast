@@ -121,6 +121,7 @@ public class RbacController {
 		return Result.success(rbacService.findBackgroundAccountByPage(param));
 	}
 
+	@OperLog(subSystem = Constant.子系统_后台管理, module = 模块_后台账号, operate = "修改登录密码")
 	@PostMapping("/modifyLoginPwd")
 	@ResponseBody
 	public Result<String> modifyLoginPwd(String id, String newPwd) {
@@ -128,6 +129,7 @@ public class RbacController {
 		return Result.success();
 	}
 
+	@OperLog(subSystem = Constant.子系统_后台管理, module = 模块_后台账号, operate = "编辑账号")
 	@PostMapping("/updateBackgroundAccount")
 	@ResponseBody
 	public Result<String> updateBackgroundAccount(BackgroundAccountEditParam param) {
