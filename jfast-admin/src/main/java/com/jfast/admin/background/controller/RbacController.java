@@ -33,6 +33,8 @@ import cn.dev33.satoken.stp.StpUtil;
 public class RbacController {
 	
 	public static final String 模块_后台账号 = "后台账号";
+	
+	public static final String 模块_后台角色管理 = "后台角色管理";
 
 	@Autowired
 	private RbacService rbacService;
@@ -50,6 +52,7 @@ public class RbacController {
 		return Result.success(rbacService.findRoleByAccountId(accountId));
 	}
 
+	@OperLog(subSystem = Constant.子系统_后台管理, module = 模块_后台角色管理, operate = "分配菜单")
 	@PostMapping("/assignMenu")
 	@ResponseBody
 	public Result<String> assignMenu(@RequestBody AssignMenuParam param) {
@@ -69,6 +72,7 @@ public class RbacController {
 		return Result.success(rbacService.findAllRole());
 	}
 
+	@OperLog(subSystem = Constant.子系统_后台管理, module = 模块_后台角色管理, operate = "添加或修改")
 	@PostMapping("/addOrUpdateRole")
 	@ResponseBody
 	public Result<String> addOrUpdateRole(RoleParam param) {
@@ -76,6 +80,7 @@ public class RbacController {
 		return Result.success();
 	}
 
+	@OperLog(subSystem = Constant.子系统_后台管理, module = 模块_后台角色管理, operate = "删除角色")
 	@GetMapping("/delRole")
 	@ResponseBody
 	public Result<String> delRole(String id) {
