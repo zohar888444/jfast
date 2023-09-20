@@ -35,6 +35,8 @@ public class RbacController {
 	public static final String 模块_后台账号 = "后台账号";
 	
 	public static final String 模块_后台角色管理 = "后台角色管理";
+	
+	public static final String 模块_后台菜单管理 = "后台菜单管理";
 
 	@Autowired
 	private RbacService rbacService;
@@ -100,6 +102,7 @@ public class RbacController {
 		return Result.success(rbacService.findMenuById(id));
 	}
 
+	@OperLog(subSystem = Constant.子系统_后台管理, module = 模块_后台菜单管理, operate = "删除")
 	@GetMapping("/delMenu")
 	@ResponseBody
 	public Result<String> delMenu(String id) {
@@ -107,6 +110,7 @@ public class RbacController {
 		return Result.success();
 	}
 
+	@OperLog(subSystem = Constant.子系统_后台管理, module = 模块_后台菜单管理, operate = "添加或修改菜单")
 	@PostMapping("/addOrUpdateMenu")
 	@ResponseBody
 	public Result<String> addOrUpdateMenu(MenuParam param) {
