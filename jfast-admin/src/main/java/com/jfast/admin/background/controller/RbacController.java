@@ -41,6 +41,7 @@ public class RbacController {
 	@Autowired
 	private RbacService rbacService;
 
+	@OperLog(subSystem = Constant.子系统_后台管理, module = 模块_后台账号, operate = "分配角色")
 	@PostMapping("/assignRole")
 	@ResponseBody
 	public Result<String> assignRole(@RequestBody AssignRoleParam param) {
